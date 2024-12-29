@@ -1,14 +1,10 @@
-# Telegram Forwarder
+# NUSSU Publicity Bot
 
-A simple Telegram Python bot running on Python3 to automatically forward messages from one chat to another.
-
-## Migration from V1
-
-v2 uses a different configuration file format. Please refer to the [Configuration](#configuration) section for more information. The bot will not start if the configuration file is not in the correct format.
+A simple Telegram bot running on Python3 to automate forwarding messages from one chat to another, specifically designed for NUSSU Publicity needs.
 
 ## Starting The Bot
 
-Once you've setup your your configuration (see below) is complete, simply run:
+Once you've set up your configuration (see below), simply run:
 
 ```shell
 python -m forwarder
@@ -20,29 +16,29 @@ or with poetry (recommended)
 poetry run forwarder
 ```
 
-## Setting Up The Bot (Read the instruction bellow before starting the bot!):
+## Setting Up The Bot
 
-Telegram Forwarder only supports Python 3.9 and higher.
+### Requirements
+
+NUSSU Publicity Bot supports Python 3.9 and higher.
 
 ### Configuration
 
-There are two files mandatory for the bot to work `.env` and `chat_list.json`.
+There are two mandatory files for the bot to work: `.env` and `chat_list.json`.
 
 #### `.env`
 
-Template env may be found in `sample.env`. Rename it to `.env` and fill in the values:
+Template `.env` can be found in `sample.env`. Rename it to `.env` and fill in the following values:
 
-- `BOT_TOKEN` - Telegram bot token. You can get it from [@BotFather](https://t.me/BotFather)
-
-- `OWNER_ID` - An integer of consisting of your owner ID.
-
-- `REMOVE_TAG` - set to `True` if you want to remove the tag ("Forwarded from xxxxx") from the forwarded message.
+- `BOT_TOKEN` - Telegram bot token. Obtain this from [@BotFather](https://t.me/BotFather).
+- `OWNER_ID` - The integer representing your Telegram user ID.
+- `REMOVE_TAG` - Set to `True` if you want to remove the "Forwarded from" tag in forwarded messages.
 
 #### `chat_list.json`
 
-Template chat_list may be found in `chat_list.sample.json`. Rename it to `chat_list.json`.
+Template `chat_list.json` can be found in `chat_list.sample.json`. Rename it to `chat_list.json`.
 
-This file contains the list of chats to forward messages from and to. The bot expect it to be an Array of objects with the following structure:
+This file contains the list of chats for message forwarding. Below is an example configuration:
 
 ```json
 [
@@ -51,76 +47,92 @@ This file contains the list of chats to forward messages from and to. The bot ex
     "destination": [-10011111111, "-10022222222#123456"]
   },
   {
-    "source": "-10087654321#000000", // Topic/Forum group
+    "source": "-10087654321#000000",
     "destination": ["-10033333333#654321"],
-    "filters": ["word1", "word2"] // message that contain this word will be forwarded
+    "filters": ["word1", "word2"]
   },
   {
     "source": -10087654321,
     "destination": [-10033333333],
-    "blacklist": ["word3", "word4"] // message that contain this word will not be forwarded
+    "blacklist": ["word3", "word4"]
   },
   {
     "source": -10087654321,
     "destination": [-10033333333],
     "filters": ["word5"],
     "blacklist": ["word6"]
-    // message must contain word5 and must not contain word6 to be forwarded
   }
 ]
 ```
 
-- `source` - The chat ID of the chat to forward messages from. It can be a group or a channel.
+- `source` - Chat ID to forward messages from. For Topic Groups, explicitly include the topic ID.
+- `destination` - Array of destination chat IDs, supporting both groups and topic chats.
+- `filters` (optional) - Messages containing any word in this array **will** be forwarded.
+- `blacklist` (optional) - Messages containing any word in this array **will not** be forwarded.
 
-  > If the source chat is a Topic groups, you **MUST** explicitly specify the topic ID. The bot will ignore incoming message from topic group if the topic ID is not specified.
+### Python Dependencies
 
-- `destination` - An array of chat IDs to forward messages to. It can be a group or a channel.
-
-  > Destenation supports Topics chat. You can use `#topicID` string to forward to specific topic. Example: `[-10011111111, "-10022222222#123456"]`. With this config it will forward to chat `-10022222222` with topic `123456` and to chat `-10011111111` .
-
-- `filters` (Optional) - An array of strings to filter words. If the message containes any of the strings in the array, it **WILL BE** forwarded.
-
-- `blacklist` (Optional) - An array of strings to blacklist words. If the message containes any of the string in the array, it will **NOT BE** forwarded.
-
-You may add as many objects as you want. The bot will forward messages from all the chats in the `source` field to all the chats in the `destination` field. Duplicates are allowed as it already handled by the bot.
-
-### Python dependencies
-
-Install the necessary python dependencies by moving to the project directory and running:
+Install necessary dependencies using one of the following:
 
 ```shell
 poetry install --only main
 ```
 
-or with pip
+or with pip:
 
 ```shell
 pip3 install -r requirements.txt
 ```
 
-This will install all necessary python packages.
+### Running in a Docker Container
 
-### Launch in Docker container
-
-#### Requrements
+#### Requirements
 
 - Docker
-- docker compose
+- Docker Compose
 
-Before launch make sure all configuration are completed (`.env` and `chat_list.json`)!
+Ensure `.env` and `chat_list.json` are correctly configured before starting the container.
 
-Then, simply run the command:
+To launch:
 
 ```shell
 docker compose up -d
 ```
 
-You can view the logs by the command:
+To view logs:
 
 ```shell
 docker compose logs -f
 ```
 
-### Credits
+## Using the Bot
 
-- [AutoForwarder-TelegramBot](https://github.com/saksham2410/AutoForwarder-TelegramBot)
+### Publicity Message Workflow
+
+1. Use the `/publicise` command to begin the process.
+2. Send a photo (optional) or type `na` if no photo is required.
+3. Type your publicity message. The bot will forward the message to the admin group for approval.
+
+### Custom Formatting Syntax
+
+Messages can include custom formatting using the following syntax:
+
+- **Bold:** `(b)Text(/b)`
+- *Italic:* `(i)Text(/i)`
+- __Underline__: `(u)Text(/u)`
+- ~~Strikethrough~~: `(s)Text(/s)`
+- [Hyperlink](https://example.com): `[Text](https://example.com)`
+
+The bot will convert this syntax to the correct format when sending messages.
+
+### Admin Actions
+
+- Admins can approve or reject a message by clicking the respective button.
+- If rejecting, the admin can use the `/feedback` command followed by the reason for rejection. Example:
+  ```text
+  /feedback The message needs clearer details about the event.
+  ```
+
+## Credits
+
+- Original inspiration: [AutoForwarder-TelegramBot](https://github.com/saksham2410/AutoForwarder-TelegramBot)
