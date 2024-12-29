@@ -1,5 +1,5 @@
 from telegram import Update
-from telegram.ext import ContextTypes, CommandHandler, filters
+from telegram.ext import ContextTypes, CommandHandler, filters, CallbackContext, CallbackQueryHandler
 from telegram.constants import ParseMode
 
 from forwarder import bot, OWNER_ID
@@ -15,6 +15,7 @@ PM_HELP_TEXT = """
 Here is a list of usable commands:
  - /start : Starts the bot.
  - /help : Sends you this help message.
+ - /publicise <message> : Forwards the provided message to the admins.
 
 just send /id in private chat/group/channel and i will reply it's id.
 """
@@ -36,7 +37,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await message.reply_text("I'm up and running!")
 
 
-async def help(update: Update, _):
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
     message = update.effective_message
     if not (chat and message):
@@ -47,6 +48,5 @@ async def help(update: Update, _):
     else:
         await message.reply_text(PM_HELP_TEXT)
 
-
-bot.add_handler(CommandHandler("start", start, filters=filters.User(OWNER_ID)))
-bot.add_handler(CommandHandler("help", help, filters=filters.User(OWNER_ID)))
+bot.add_handler(CommandHandler("start", start))
+bot.add_handler(CommandHandler("help", help_command))
