@@ -1,6 +1,7 @@
 import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, CallbackContext, filters
+from forwarder.utils.textsToSend import PM_HELP_TEXT
 from forwarder import bot, OWNER_ID
 from forwarder.utils.publicise_helpers import (
     parse_custom_formatting,
@@ -31,11 +32,11 @@ async def handle_photo_or_na(update: Update, context: CallbackContext) -> None:
     if update.message.text and update.message.text.strip().lower() == "na":
         context.user_data["photo"] = "na"
         context.user_data["state"] = "waiting_for_message"
-        await update.message.reply_text("Got it! Now, please send the message you want to publicise.")
+        await update.message.reply_text(PM_HELP_TEXT)
     elif update.message.photo:
         context.user_data["photo"] = update.message.photo[-1].file_id
         context.user_data["state"] = "waiting_for_message"
-        await update.message.reply_text("Photo received! Now, please send the message you want to publicise.")
+        await update.message.reply_text(PM_HELP_TEXT)
     else:
         await update.message.reply_text(
             "Invalid input. Please send a picture or type 'na' if no picture is required."

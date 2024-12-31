@@ -13,29 +13,19 @@ To obtain a list of commands, use /help.
 
 PM_HELP_TEXT = """
 Here is a list of usable commands:
- - /start : Starts the bot.
+ - /id : Get your own telegram user ID.
  - /help : Sends you this help message.
  - /publicise <message> : Forwards the provided message to the admins.
+ 
+Markdown formatting is supported in messages. Here are some examples:
+    Bold - (b) text (/b) 
+    Italic - (i) text (/i) 
+    Strikethrough - (s) text (/s) 
+    hyperlink - [text](url) 
+    Underline - (u) text (/u) 
 
 just send /id in private chat/group/channel and i will reply it's id.
 """
-
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat = update.effective_chat
-    message = update.effective_message
-    user = update.effective_user
-    if not (chat and message and user):
-        return
-
-    if chat.type == "private":
-        await message.reply_text(
-            PM_START_TEXT.format(user.first_name, context.bot.first_name),
-            parse_mode=ParseMode.HTML,
-        )
-    else:
-        await message.reply_text("I'm up and running!")
-
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
@@ -47,6 +37,5 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await message.reply_text("Contact me via PM to get a list of usable commands.")
     else:
         await message.reply_text(PM_HELP_TEXT)
-
-bot.add_handler(CommandHandler("start", start))
+        
 bot.add_handler(CommandHandler("help", help_command))
